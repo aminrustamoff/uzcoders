@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %} Title {% endblock %}</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'mainpage/css/styles.css' %}">
+    <script src="{% static 'mainpage/js/scripts.js' %}"></script>
+</head>
+<body>
+    <div class="sidebar">
+        {% block sidebar %}
+            <ul id="sidebar-menu">
+                <li>
+                    <a href="{% url "home" %}">Home</a>
+                </li>
+                <li>
+                    <a href="{% url "posts_list" %}">Posts</a>
+                </li>
+                {% if user.is_authenticated and perms.mainpage.add_posts %}
+                    <li>
+                        <a href="{% url "create_post" %}">Create Post</a>
+                    </li>
+                {% endif %}
+            </ul>
+        {% endblock %}
+    </div>
+
+     <button id="toggle-btn">☰</button>
+
+    <div class="content">
+        {% block content %}
+        <h1>Welcome to the Home Page</h1>
+        {% endblock %}
+    </div>
+</body>
+</html>

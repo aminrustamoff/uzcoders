@@ -1,11 +1,87 @@
-from django.shortcuts import render, HttpResponse 
+from django.shortcuts import render, HttpResponse, redirect, get_object_or_404
 from django.views import View
 from django.views.generic import ListView, DetailView
+from requests import request
 from .models import Posts
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User, Permission
+from django.contrib.auth.forms import UserCreationForm
+from .forms import CustomSignupForm
+from django.contrib.auth.decorators import user_passes_test
+
+def is_superuser(user):
+    return user.is_superuser and user.is_authenticated
 
 def home(request):
     return render(request, 'index.html')
+
+def contact(request):
+    return render(request, 'contact.html')
+
+def Signup(request):
+    if request.method == 'POST':
+        form = CustomSignupForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            return redirect('login')
+    else:
+        form = CustomSignupForm()
+    return render(request, 'auth/signup.html', {'form': form})
+
+
+class Login(View):
+    def get(self, request):
+        return render(request, 'auth/login.html')
+
+    def post(self, request):
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return redirect('home')
+        else:
+            return redirect('login')
+        
+class Logout(View):
+    def get(self, request):
+        logout(request)
+        return render(request, 'auth/logout.html')
+
+    class Meta:
+        verbose_name = 'Logout'
+        verbose_name_plural = 'Logout'
+
+@user_passes_test(is_superuser)
+def manage_users(request):
+    users = User.objects.exclude(is_superuser=True)  # Hide the superuser from themselves
+    return render(request, 'manage/manage_users.html', {'users': users})
+
+@user_passes_test(is_superuser)
+def toggle_staff(request, user_id):
+    user = get_object_or_404(User, pk=user_id)
+    user.is_staff = not user.is_staff
+    user.save()
+    return redirect('manage_users')
+
+@user_passes_test(is_superuser)
+def toggle_active(request, user_id):
+    user = get_object_or_404(User, pk=user_id)
+    user.is_active = not user.is_active
+    user.save()
+    return redirect('manage_users')
+
+@user_passes_test(is_superuser)
+def edit_user(request, user_id):
+    user = get_object_or_404(User, pk=user_id)
+    if request.method == 'POST':
+        user.username = request.POST.get('username')
+        user.email = request.POST.get('email')
+        user.save()
+        return redirect('manage_users')
+    return render(request, 'manage/edit_user.html', {'user': user})
+
 
 class PostsView(ListView):
     model = Posts

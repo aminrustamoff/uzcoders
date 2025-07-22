@@ -12,22 +12,26 @@
     <div class="sidebar">
         {% block sidebar %}
             <ul id="sidebar-menu">
-                <li>
-                    <a href="{% url "home" %}">Home</a>
-                </li>
-                <li>
-                    <a href="{% url "posts_list" %}">Posts</a>
-                </li>
+                <li><a href="{% url "home" %}">Home</a></li>
+                <li><a href="{% url "posts_list" %}">Posts</a></li>
+                <li><a href="{% url "contact" %}">Contact</a></li>
+                {% if not user.is_authenticated %}
+                    <li><a href="{% url "signup" %}">Sign Up</a></li>
+                    <li><a href="{% url "login" %}">Login</a></li>
+                {% else %}
+                    <li><a href="{% url "logout" %}">Logout</a></li>
+                {% endif %}
                 {% if user.is_authenticated and perms.mainpage.add_posts %}
                     <li>
                         <a href="{% url "create_post" %}">Create Post</a>
+                    </li>
+                    <li>
+                        <a href="{% url "manage_users" %}">Manage Users</a>
                     </li>
                 {% endif %}
             </ul>
         {% endblock %}
     </div>
-
-     <button id="toggle-btn">☰</button>
 
     <div class="content">
         {% block content %}

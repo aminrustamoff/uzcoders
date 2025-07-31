@@ -36,5 +36,9 @@
         <br>
         <button type="submit">Login</button>
     </form>
+
+    <p>Don't have an account? <a href="{% url 'signup' %}">Sign up</a></p>
+    <p>Forgot your password? <a href="{% url 'password_reset' %}">Reset it</a></p>
+    <p><a href="{% url 'home' %}">Back to home</a></p>
 </body>
 </html>

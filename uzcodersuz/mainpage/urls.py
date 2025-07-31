@@ -10,6 +10,7 @@ urlpatterns = [
     path('accounts/login/', views.Login.as_view(), name='login'),
     path('accounts/logout/', views.Logout.as_view(), name='logout'),
     path('accounts/signup/', views.Signup, name='signup'),
+    path('accounts/reset_password/', views.PasswordResetView.as_view(), name='password_reset'),
     path('manage/users/', views.manage_users, name='manage_users'),
     path('manage/users/<int:user_id>/toggle-staff/', views.toggle_staff, name='toggle_staff'),
     path('manage/users/<int:user_id>/toggle-active/', views.toggle_active, name='toggle_active'),

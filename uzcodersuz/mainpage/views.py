@@ -1,7 +1,6 @@
 from django.shortcuts import render, HttpResponse, redirect, get_object_or_404
 from django.views import View
 from django.views.generic import ListView, DetailView
-from requests import request
 from .models import Posts
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth import authenticate, login, logout
@@ -52,6 +51,23 @@ class Logout(View):
     class Meta:
         verbose_name = 'Logout'
         verbose_name_plural = 'Logout'
+
+class PasswordResetView(View):
+    def get(self, request):
+        return render(request, 'auth/password_reset.html')
+
+    def post(self, request):
+        email = request.POST.get('email')
+        try:
+            user = User.objects.get(email=email)
+            # Here you would typically send an email with a reset link
+            return HttpResponse(f'Password reset link sent to {email}')
+        except User.DoesNotExist:
+            return HttpResponse('User with this email does not exist', status=404)
+
+    class Meta:
+        verbose_name = 'Password Reset'
+        verbose_name_plural = 'Password Resets'
 
 @user_passes_test(is_superuser)
 def manage_users(request):

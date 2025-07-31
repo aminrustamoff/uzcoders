@@ -1,0 +1,7 @@
+.bg-teal-600 {
+    background-color: var(--bs-teal-600);
+}
+
+#navbar-menu {
+    font-size: 1.2rem;
+}
